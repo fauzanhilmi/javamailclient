@@ -6,11 +6,25 @@
 
 package gui;
 
+import blockcipher.BlockCipher;
+import blockcipher.StringByteModifier;
+import com.google.api.client.util.Base64;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javamailclient.GmailAPI;
 import javax.mail.MessagingException;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import signature.BigPoint;
+import signature.ECDSA;
+import signature.KeyGenerator;
 
 /**
  *
@@ -19,6 +33,9 @@ import javax.mail.MessagingException;
 public class ComposePanel extends javax.swing.JPanel {
 
     byte[] key;
+    byte[] cipher;
+    String message;
+    String attachmentPath;
     
     /**
      * Creates new form ComposePanel
@@ -40,8 +57,6 @@ public class ComposePanel extends javax.swing.JPanel {
         toTextField = new javax.swing.JTextField();
         subjectTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        ccTextField = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         msgTextField = new javax.swing.JTextArea();
         encryptCheckBox = new javax.swing.JCheckBox();
@@ -55,14 +70,14 @@ public class ComposePanel extends javax.swing.JPanel {
         sendButton = new javax.swing.JButton();
         encryptFromFileCheckBox = new javax.swing.JCheckBox();
         signFromFileCheckBox = new javax.swing.JCheckBox();
+        generateKeyButton = new javax.swing.JButton();
+        attachmentButton = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(675, 515));
 
         jLabel1.setText("To");
 
         jLabel2.setText("Subject");
-
-        jLabel3.setText("Cc");
 
         msgTextField.setColumns(20);
         msgTextField.setRows(5);
@@ -102,6 +117,11 @@ public class ComposePanel extends javax.swing.JPanel {
 
         openSignButton.setText("Open");
         openSignButton.setEnabled(false);
+        openSignButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openSignButtonActionPerformed(evt);
+            }
+        });
 
         sendButton.setText("Send");
         sendButton.addActionListener(new java.awt.event.ActionListener() {
@@ -126,29 +146,45 @@ public class ComposePanel extends javax.swing.JPanel {
             }
         });
 
+        generateKeyButton.setText("Generate Key");
+        generateKeyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateKeyButtonActionPerformed(evt);
+            }
+        });
+
+        attachmentButton.setText("Add Attachment");
+        attachmentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                attachmentButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(attachmentButton)
+                        .addGap(244, 244, 244)
+                        .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                     .addComponent(jLabel2)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(28, 28, 28)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(subjectTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(toTextField)
-                            .addComponent(ccTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE))
-                .addGap(27, 27, 27)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel1)
+                                    .addGap(28, 28, 28)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(subjectTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
+                                .addComponent(toTextField)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)))
+                .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(signFromFileCheckBox)
@@ -165,13 +201,10 @@ public class ComposePanel extends javax.swing.JPanel {
                             .addComponent(signCheckBox)
                             .addComponent(encryptCheckBox)
                             .addComponent(keyEncryptLabel)
-                            .addComponent(signLabel))
+                            .addComponent(signLabel)
+                            .addComponent(generateKeyButton))
                         .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(184, 184, 184)
-                .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(22, 22, 22))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,10 +217,6 @@ public class ComposePanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(subjectTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(ccTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -210,13 +239,21 @@ public class ComposePanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(openSignButton)
                             .addComponent(signFromFileCheckBox))
-                        .addGap(0, 132, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(generateKeyButton)
+                        .addGap(0, 141, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sendButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sendButton)
+                    .addComponent(attachmentButton)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void encrypt(byte[] plain) {
+        cipher = BlockCipher.cipherBlockChaining(plain, StringByteModifier.md5Hash(key));
+    }
+    
     private boolean isFileEncrypt() {
         return encryptCheckBox.isSelected() && encryptFromFileCheckBox.isEnabled() 
                 && encryptFromFileCheckBox.isSelected();
@@ -229,6 +266,18 @@ public class ComposePanel extends javax.swing.JPanel {
     
     private void openEncryptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openEncryptButtonActionPerformed
         // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showOpenDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            Path path = Paths.get(file.getAbsolutePath());
+            try {
+                key = Files.readAllBytes(path);
+                keyEncryptTextField.setText(key.toString());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_openEncryptButtonActionPerformed
 
     private void encryptCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_encryptCheckBoxActionPerformed
@@ -260,19 +309,120 @@ public class ComposePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_signFromFileCheckBoxActionPerformed
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+        System.out.println("Klik!");
+        sendMessage();
+    }//GEN-LAST:event_sendButtonActionPerformed
+
+    private void generateKeyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateKeyButtonActionPerformed
+        KeyGenerator key = new KeyGenerator();
+        key.generate();
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showSaveDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            String save = key.privatekey.toString();
+            try {
+                FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+                fos.write(save.getBytes());
+                fos.close();
+            } catch (Exception ex) {
+            }
+        }
+        
+        chooser = new JFileChooser();
+        retrieval = chooser.showSaveDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            String save = key.publickey.getX().toString();
+            save = save + '\n' + key.publickey.getY().toString();
+            try {
+                FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+                fos.write(save.getBytes());
+                fos.close();
+            } catch (Exception ex) {
+            }
+        }
+    }//GEN-LAST:event_generateKeyButtonActionPerformed
+
+    private void openSignButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openSignButtonActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showOpenDialog(null);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Private file", "pri");
+        chooser.setFileFilter(filter);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            Path path = Paths.get(file.getAbsolutePath());
+            try {
+                String s = new String(Files.readAllBytes(path));
+                signTextField.setText(s);
+            } catch (IOException ex) {
+                
+            }
+        }
+    }//GEN-LAST:event_openSignButtonActionPerformed
+
+    private void attachmentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachmentButtonActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showOpenDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            attachmentPath = file.getAbsolutePath();
+        }
+    }//GEN-LAST:event_attachmentButtonActionPerformed
+    
+    private void generateMessage() {
+        if (signCheckBox.isSelected()) {
+            String s = msgTextField.getText();
+            s = s + "\n\n";
+            
+            ECDSA ecdsa = new ECDSA();
+            BigPoint signature = ecdsa.generate(s, new BigInteger(signTextField.getText()));
+            
+            s = s + "<ds>" + signature.getX().toString(16) + "\n" + signature.getY().toString(16) + "</ds>";
+            msgTextField.setText(s);
+        }
+        if (encryptCheckBox.isSelected()) {
+            System.out.println("Dienkrip");
+            generateKey();
+            encrypt(msgTextField.getText().getBytes());
+            message = Base64.encodeBase64String(cipher);
+        } else {
+            System.out.println("Gak dienkrip");
+            message = msgTextField.getText();
+        }
+    }
+    
+    private void generateKey() {
+        if (isFileEncrypt()) {
+            
+        } else {
+            key = keyEncryptTextField.getText().getBytes();
+       }
+    }
+    
+    public void sendMessage() {
+        System.out.println("Kirim email!");
+        generateMessage();
+        System.out.println("Generate?");
         String from = GmailAPI.USER_EMAIL;
         String to = toTextField.getText();
         String subject = subjectTextField.getText();
-        String body = msgTextField.getText();
         try {
-            GmailAPI.sendEmail(to, from, subject, body);
+            GmailAPI.sendEmail(to, from, subject, message);
+            /*System.out.println("Key : " + key);
+            System.out.println("Message : " + message);
+            byte[] b = Base64.decodeBase64(message);
+            System.out.println("Panjang key md5 : " + StringByteModifier.md5Hash(key).length);
+            byte[] dekrip = BlockCipher.decryptCBC (b, StringByteModifier.md5Hash(key));
+            System.out.println("Dekrip : " + new String(dekrip));*/
         } catch (MessagingException ex) {
             Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_sendButtonActionPerformed
-
+    }
+    
     private void fromFileEncrypt(boolean b) {
         if (encryptFromFileCheckBox.isEnabled()) {
             keyEncryptTextField.setEnabled(!b);
@@ -294,12 +444,12 @@ public class ComposePanel extends javax.swing.JPanel {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField ccTextField;
+    private javax.swing.JButton attachmentButton;
     private javax.swing.JCheckBox encryptCheckBox;
     private javax.swing.JCheckBox encryptFromFileCheckBox;
+    private javax.swing.JButton generateKeyButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel keyEncryptLabel;
     private javax.swing.JTextField keyEncryptTextField;

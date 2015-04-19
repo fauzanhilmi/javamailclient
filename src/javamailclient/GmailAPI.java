@@ -80,7 +80,7 @@ public class GmailAPI {
   public static List<Message> Sent;
   public static List<Message> Spam;
   public static List<Message> Draft;
-  public static int limit = 20;
+  public static int limit = 30;
   
   public static void main(String[] args) {
       String to = "13512003@std.stei.itb.ac.id";
@@ -320,6 +320,7 @@ public class GmailAPI {
   public static void getInbox() throws IOException, MessagingException {
       List<String> labelIds = new ArrayList<>();
       labelIds.add("INBOX");
+      //labelIds.add("SPAM");
       Inbox = getMessageswithLabels(labelIds);
       /*for (Message message : Inbox) {
           //System.out.println(message.getPayload());
@@ -374,12 +375,13 @@ public class GmailAPI {
     MimeMessage mm;
     for(Message message : messages) {
         realMessages.add(getMessage(service,USER,message.getId()));
+        System.out.println("RealMessages"+realMessages.size());
         if(realMessages.size()>limit) break;
     }
     /*for (Message message : realMessages) {
       System.out.println(message.getPayload().toPrettyString());
     }*/
-    return messages;
+    return realMessages;
   }
   
   public static Message getMessage(Gmail service, String userId, String messageId)
