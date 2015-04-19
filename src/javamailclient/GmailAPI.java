@@ -124,7 +124,7 @@ public class GmailAPI {
 
     Profile profile = service.users().getProfile(USER).execute();
     USER_EMAIL = profile.getEmailAddress();
-      
+      System.out.println(USER_EMAIL);
     /*ListThreadsResponse threadsResponse = service.users().threads().list(USER).execute();
     List<Thread> threads = threadsResponse.getThreads();
 
@@ -134,6 +134,10 @@ public class GmailAPI {
     }*/
   }
   
+  public static void sendEmail(String to, String from, String subject, String bodyText) throws MessagingException, IOException {
+      MimeMessage mm = GmailAPI.createEmail(to, from, subject, bodyText);
+      sendMessage(service, USER, mm);
+  }
    /**
    * Send an email from the user's mailbox to its recipient.
    *
