@@ -6,6 +6,12 @@
 
 package gui;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javamailclient.GmailAPI;
+import javax.mail.MessagingException;
+
 /**
  *
  * @author user
@@ -46,7 +52,7 @@ public class ComposePanel extends javax.swing.JPanel {
         signLabel = new javax.swing.JLabel();
         signTextField = new javax.swing.JTextField();
         openSignButton = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        sendButton = new javax.swing.JButton();
         encryptFromFileCheckBox = new javax.swing.JCheckBox();
         signFromFileCheckBox = new javax.swing.JCheckBox();
 
@@ -97,7 +103,12 @@ public class ComposePanel extends javax.swing.JPanel {
         openSignButton.setText("Open");
         openSignButton.setEnabled(false);
 
-        jButton4.setText("Send");
+        sendButton.setText("Send");
+        sendButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendButtonActionPerformed(evt);
+            }
+        });
 
         encryptFromFileCheckBox.setText("From File");
         encryptFromFileCheckBox.setEnabled(false);
@@ -159,7 +170,7 @@ public class ComposePanel extends javax.swing.JPanel {
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(184, 184, 184)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -202,10 +213,20 @@ public class ComposePanel extends javax.swing.JPanel {
                         .addGap(0, 132, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4))
+                .addComponent(sendButton))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean isFileEncrypt() {
+        return encryptCheckBox.isSelected() && encryptFromFileCheckBox.isEnabled() 
+                && encryptFromFileCheckBox.isSelected();
+    }
+    
+    private boolean isFileSign() {
+        return signCheckBox.isSelected() && signFromFileCheckBox.isEnabled()
+                && signFromFileCheckBox.isSelected();
+    }
+    
     private void openEncryptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openEncryptButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_openEncryptButtonActionPerformed
@@ -238,6 +259,20 @@ public class ComposePanel extends javax.swing.JPanel {
         fromFileSign(signFromFileCheckBox.isSelected());
     }//GEN-LAST:event_signFromFileCheckBoxActionPerformed
 
+    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+        String from = GmailAPI.USER_EMAIL;
+        String to = toTextField.getText();
+        String subject = subjectTextField.getText();
+        String body = msgTextField.getText();
+        try {
+            GmailAPI.sendEmail(to, from, subject, body);
+        } catch (MessagingException ex) {
+            Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_sendButtonActionPerformed
+
     private void fromFileEncrypt(boolean b) {
         if (encryptFromFileCheckBox.isEnabled()) {
             keyEncryptTextField.setEnabled(!b);
@@ -262,7 +297,6 @@ public class ComposePanel extends javax.swing.JPanel {
     private javax.swing.JTextField ccTextField;
     private javax.swing.JCheckBox encryptCheckBox;
     private javax.swing.JCheckBox encryptFromFileCheckBox;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -272,6 +306,7 @@ public class ComposePanel extends javax.swing.JPanel {
     private javax.swing.JTextArea msgTextField;
     private javax.swing.JButton openEncryptButton;
     private javax.swing.JButton openSignButton;
+    private javax.swing.JButton sendButton;
     private javax.swing.JCheckBox signCheckBox;
     private javax.swing.JCheckBox signFromFileCheckBox;
     private javax.swing.JLabel signLabel;

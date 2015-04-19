@@ -7,6 +7,7 @@
 package gui;
 
 import java.awt.CardLayout;
+import javamailclient.GmailAPI;
 
 /**
  *
@@ -31,7 +32,11 @@ public class ClientPanel extends javax.swing.JPanel {
         mainPanel.add("COMPOSE", composePanel);
         mainPanel.add("INBOX", inboxPanel);
         mainPanel.add("SENT MAIL", sentMailPanel);
-        mainPanel.add("DRAFT", draftPanel);
+        mainPanel.add("DRAFT", draftPanel);    
+    }
+    
+    public void setHelloMessage() {
+        helloMessageLabel.setText("Hello, "+GmailAPI.USER_EMAIL+"!");
     }
 
     /**

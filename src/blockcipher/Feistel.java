@@ -10,10 +10,10 @@ import java.util.ArrayList;
 
 /**
  *
- * @author user
+ * @author khaidzir
  */
 public class Feistel {
-     
+    
     private int iterate;
     
     public Feistel(int iterate) {

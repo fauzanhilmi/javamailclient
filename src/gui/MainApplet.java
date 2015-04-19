@@ -9,6 +9,10 @@ package gui;
 import java.awt.CardLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javamailclient.GmailAPI;
 
 /**
  *
@@ -29,7 +33,15 @@ public class MainApplet extends javax.swing.JApplet {
         loginPanel.getSubmitButton().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                try {
+                    //System.out.println("haha");
+                    GmailAPI.initialize(LoginPanel.code);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainApplet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                clientPanel.setHelloMessage();
                 showPanel("HOME");
+                //clientPanel.setHelloMessage();
             }
         });
     }

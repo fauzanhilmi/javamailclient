@@ -23,6 +23,7 @@ import javax.swing.JToggleButton;
  */
 public class LoginPanel extends javax.swing.JPanel {
 
+    public static String code;
     /**
      * Creates new form LoginPanel
      */
@@ -130,16 +131,18 @@ public class LoginPanel extends javax.swing.JPanel {
 
     private void SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitButtonActionPerformed
 
-        try {
-            String code = KeyField.getText();
-            GmailAPI.initialize(code);
-            /*HomeFrame hf = new HomeFrame();
+        code = KeyField.getText();
+        /*try {
+            code = KeyField.getText();
+            //String code = KeyField.getText();
+            //GmailAPI.initialize(code);
+            HomeFrame hf = new HomeFrame();
             this.setVisible(false);
-            hf.setVisible(true);*/
+            hf.setVisible(true);
             //JLabel hellolabel = Awt1.getComponentByName(someOtherFrame, "jButton1");
         } catch (IOException ex) {
             Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
     }//GEN-LAST:event_SubmitButtonActionPerformed
 
 
