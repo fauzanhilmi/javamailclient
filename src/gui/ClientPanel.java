@@ -186,13 +186,27 @@ public class ClientPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_inboxButtonActionPerformed
 
     private void sentMailButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sentMailButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            GmailAPI.getSent();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         showPanel("SENT MAIL");
+        sentMailPanel.generate();
     }//GEN-LAST:event_sentMailButtonActionPerformed
 
     private void draftButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_draftButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            GmailAPI.getDraft();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         showPanel("DRAFT");
+        draftPanel.generate();
     }//GEN-LAST:event_draftButtonActionPerformed
 
     private void showPanel(String panelName) {
