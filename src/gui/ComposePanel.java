@@ -11,6 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javamailclient.GmailAPI;
 import javax.mail.MessagingException;
+import blockcipher.BlockCipher;
+import blockcipher.StringByteModifier;
+import com.google.api.client.util.Base64;
 
 /**
  *
@@ -19,6 +22,8 @@ import javax.mail.MessagingException;
 public class ComposePanel extends javax.swing.JPanel {
 
     byte[] key;
+    byte[] cipher;
+    String message;
     
     /**
      * Creates new form ComposePanel
@@ -55,6 +60,7 @@ public class ComposePanel extends javax.swing.JPanel {
         sendButton = new javax.swing.JButton();
         encryptFromFileCheckBox = new javax.swing.JCheckBox();
         signFromFileCheckBox = new javax.swing.JCheckBox();
+        generateKeyButton = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(675, 515));
 
@@ -126,6 +132,13 @@ public class ComposePanel extends javax.swing.JPanel {
             }
         });
 
+        generateKeyButton.setText("Generate Key");
+        generateKeyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateKeyButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -165,7 +178,8 @@ public class ComposePanel extends javax.swing.JPanel {
                             .addComponent(signCheckBox)
                             .addComponent(encryptCheckBox)
                             .addComponent(keyEncryptLabel)
-                            .addComponent(signLabel))
+                            .addComponent(signLabel)
+                            .addComponent(generateKeyButton))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -210,13 +224,19 @@ public class ComposePanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(openSignButton)
                             .addComponent(signFromFileCheckBox))
-                        .addGap(0, 132, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(generateKeyButton)
+                        .addGap(0, 103, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sendButton))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void encrypt(byte[] plain) {
+        cipher = BlockCipher.cipherBlockChaining(plain, StringByteModifier.md5Hash(key));
+    }
+    
     private boolean isFileEncrypt() {
         return encryptCheckBox.isSelected() && encryptFromFileCheckBox.isEnabled() 
                 && encryptFromFileCheckBox.isSelected();
@@ -260,19 +280,57 @@ public class ComposePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_signFromFileCheckBoxActionPerformed
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+        System.out.println("Klik!");
+        sendMessage();
+    }//GEN-LAST:event_sendButtonActionPerformed
+
+    private void generateKeyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateKeyButtonActionPerformed
+        //KeyGenerator key = new KeyGenerator();
+    }//GEN-LAST:event_generateKeyButtonActionPerformed
+    
+    private void generateMessage() {
+        
+        if (encryptCheckBox.isSelected()) {
+            System.out.println("Dienkrip");
+            generateKey();
+            encrypt(msgTextField.getText().getBytes());
+            message = Base64.encodeBase64String(cipher);
+        } else {
+            System.out.println("Gak dienkrip");
+            message = msgTextField.getText();
+        }
+    }
+    
+    private void generateKey() {
+        if (isFileEncrypt()) {
+            
+        } else {
+            key = keyEncryptTextField.getText().getBytes();
+       }
+    }
+    
+    public void sendMessage() {
+        System.out.println("Kirim email!");
+        generateMessage();
+        System.out.println("Generate?");
         String from = GmailAPI.USER_EMAIL;
         String to = toTextField.getText();
         String subject = subjectTextField.getText();
-        String body = msgTextField.getText();
         try {
-            GmailAPI.sendEmail(to, from, subject, body);
+            GmailAPI.sendEmail(to, from, subject, message);
+            System.out.println("Key : " + key);
+            System.out.println("Message : " + message);
+            byte[] b = Base64.decodeBase64(message);
+            System.out.println("Panjang key md5 : " + StringByteModifier.md5Hash(key).length);
+            byte[] dekrip = BlockCipher.decryptCBC (b, StringByteModifier.md5Hash(key));
+            System.out.println("Dekrip : " + new String(dekrip));
         } catch (MessagingException ex) {
             Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_sendButtonActionPerformed
-
+    }
+    
     private void fromFileEncrypt(boolean b) {
         if (encryptFromFileCheckBox.isEnabled()) {
             keyEncryptTextField.setEnabled(!b);
@@ -297,6 +355,7 @@ public class ComposePanel extends javax.swing.JPanel {
     private javax.swing.JTextField ccTextField;
     private javax.swing.JCheckBox encryptCheckBox;
     private javax.swing.JCheckBox encryptFromFileCheckBox;
+    private javax.swing.JButton generateKeyButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
