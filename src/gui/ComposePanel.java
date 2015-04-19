@@ -35,6 +35,7 @@ public class ComposePanel extends javax.swing.JPanel {
     byte[] key;
     byte[] cipher;
     String message;
+    String attachmentPath;
     
     /**
      * Creates new form ComposePanel
@@ -56,8 +57,6 @@ public class ComposePanel extends javax.swing.JPanel {
         toTextField = new javax.swing.JTextField();
         subjectTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        ccTextField = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         msgTextField = new javax.swing.JTextArea();
         encryptCheckBox = new javax.swing.JCheckBox();
@@ -79,8 +78,6 @@ public class ComposePanel extends javax.swing.JPanel {
         jLabel1.setText("To");
 
         jLabel2.setText("Subject");
-
-        jLabel3.setText("Cc");
 
         msgTextField.setColumns(20);
         msgTextField.setRows(5);
@@ -157,6 +154,11 @@ public class ComposePanel extends javax.swing.JPanel {
         });
 
         attachmentButton.setText("Add Attachment");
+        attachmentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                attachmentButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -164,53 +166,45 @@ public class ComposePanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(attachmentButton)
+                        .addGap(244, 244, 244)
+                        .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                     .addComponent(jLabel2)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(28, 28, 28)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(subjectTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(toTextField)
-                            .addComponent(ccTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel1)
+                                    .addGap(28, 28, 28)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(subjectTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
+                                .addComponent(toTextField)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)))
+                .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(signFromFileCheckBox)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
-                                .addComponent(openSignButton))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(encryptFromFileCheckBox)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(openEncryptButton))
-                            .addComponent(keyEncryptTextField)
-                            .addComponent(signTextField)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(signCheckBox)
-                                    .addComponent(encryptCheckBox)
-                                    .addComponent(keyEncryptLabel)
-                                    .addComponent(signLabel)
-                                    .addComponent(generateKeyButton))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())
+                        .addComponent(signFromFileCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                        .addComponent(openSignButton))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(attachmentButton)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(184, 184, 184)
-                .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(encryptFromFileCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(openEncryptButton))
+                    .addComponent(keyEncryptTextField)
+                    .addComponent(signTextField)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(signCheckBox)
+                            .addComponent(encryptCheckBox)
+                            .addComponent(keyEncryptLabel)
+                            .addComponent(signLabel)
+                            .addComponent(generateKeyButton))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(22, 22, 22))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -223,10 +217,6 @@ public class ComposePanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(subjectTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(ccTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -251,11 +241,12 @@ public class ComposePanel extends javax.swing.JPanel {
                             .addComponent(signFromFileCheckBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(generateKeyButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
-                        .addComponent(attachmentButton))
+                        .addGap(0, 141, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sendButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sendButton)
+                    .addComponent(attachmentButton)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -275,6 +266,18 @@ public class ComposePanel extends javax.swing.JPanel {
     
     private void openEncryptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openEncryptButtonActionPerformed
         // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showOpenDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            Path path = Paths.get(file.getAbsolutePath());
+            try {
+                key = Files.readAllBytes(path);
+                keyEncryptTextField.setText(key.toString());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_openEncryptButtonActionPerformed
 
     private void encryptCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_encryptCheckBoxActionPerformed
@@ -357,6 +360,16 @@ public class ComposePanel extends javax.swing.JPanel {
             }
         }
     }//GEN-LAST:event_openSignButtonActionPerformed
+
+    private void attachmentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachmentButtonActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showOpenDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            attachmentPath = file.getAbsolutePath();
+        }
+    }//GEN-LAST:event_attachmentButtonActionPerformed
     
     private void generateMessage() {
         if (signCheckBox.isSelected()) {
@@ -432,13 +445,11 @@ public class ComposePanel extends javax.swing.JPanel {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton attachmentButton;
-    private javax.swing.JTextField ccTextField;
     private javax.swing.JCheckBox encryptCheckBox;
     private javax.swing.JCheckBox encryptFromFileCheckBox;
     private javax.swing.JButton generateKeyButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel keyEncryptLabel;
     private javax.swing.JTextField keyEncryptTextField;
