@@ -5,8 +5,11 @@
  */
 package signature;
 
+<<<<<<< HEAD
+=======
 import java.math.BigInteger;
 
+>>>>>>> origin/master
 /**
  *
  * @author A 46 CB i3
@@ -17,6 +20,15 @@ public class KriptoSurel {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+<<<<<<< HEAD
+        KeyGenerator key = new KeyGenerator();
+        key.generate();
+        
+        ECDSA ecdsa = new ECDSA();
+        
+        BigPoint signature = ecdsa.generate("menori", key.privatekey);
+        System.out.println(ecdsa.verify("menori", signature, key.publickey));
+=======
         EC ec = new EC(
                 new BigInteger("-3"),
                 new BigInteger("64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1", 16),
@@ -34,6 +46,7 @@ public class KriptoSurel {
         System.out.println(ecdsa.verify("menori", signature, publickey));
         
         BigPoint bp = new BigPoint(BigInteger.ZERO, BigInteger.ZERO);
+>>>>>>> origin/master
     }
     
 }
