@@ -6,6 +6,14 @@
 
 package gui;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /**
  *
  * @author user
@@ -38,6 +46,18 @@ public class InboxPanel extends javax.swing.JPanel {
         jTextField2 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        decryptCheckBox = new javax.swing.JCheckBox();
+        keyDecryptLabel = new javax.swing.JLabel();
+        keyDecryptTextField = new javax.swing.JTextField();
+        decryptFromFileCheckBox = new javax.swing.JCheckBox();
+        openDecryptButton = new javax.swing.JButton();
+        verifyCheckBox = new javax.swing.JCheckBox();
+        verifyLabel = new javax.swing.JLabel();
+        verifyTextField = new javax.swing.JTextField();
+        verifyFromFileCheckBox = new javax.swing.JCheckBox();
+        openVerifyButton = new javax.swing.JButton();
+        decyptButton = new javax.swing.JButton();
+        verifyButton = new javax.swing.JButton();
 
         jList1.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -64,6 +84,66 @@ public class InboxPanel extends javax.swing.JPanel {
 
         jButton2.setText(">>");
 
+        decryptCheckBox.setText("Decrypt");
+        decryptCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                decryptCheckBoxActionPerformed(evt);
+            }
+        });
+
+        keyDecryptLabel.setText("Key");
+        keyDecryptLabel.setEnabled(false);
+
+        keyDecryptTextField.setEnabled(false);
+
+        decryptFromFileCheckBox.setText("File");
+        decryptFromFileCheckBox.setEnabled(false);
+        decryptFromFileCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                decryptFromFileCheckBoxActionPerformed(evt);
+            }
+        });
+
+        openDecryptButton.setText("Open");
+        openDecryptButton.setEnabled(false);
+        openDecryptButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openDecryptButtonActionPerformed(evt);
+            }
+        });
+
+        verifyCheckBox.setText("Verify");
+        verifyCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verifyCheckBoxActionPerformed(evt);
+            }
+        });
+
+        verifyLabel.setText("Key");
+        verifyLabel.setEnabled(false);
+
+        verifyTextField.setEnabled(false);
+
+        verifyFromFileCheckBox.setText("File");
+        verifyFromFileCheckBox.setEnabled(false);
+        verifyFromFileCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verifyFromFileCheckBoxActionPerformed(evt);
+            }
+        });
+
+        openVerifyButton.setText("Open");
+        openVerifyButton.setEnabled(false);
+        openVerifyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openVerifyButtonActionPerformed(evt);
+            }
+        });
+
+        decyptButton.setText("Decrypt");
+
+        verifyButton.setText("Verify");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -71,23 +151,41 @@ public class InboxPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton2))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jTextField1)
-                            .addComponent(jTextField2))))
-                .addContainerGap())
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(keyDecryptTextField, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(verifyFromFileCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                        .addComponent(openVerifyButton))
+                    .addComponent(verifyButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(decryptCheckBox, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(keyDecryptLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(verifyCheckBox, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(verifyLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(decyptButton, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(decryptFromFileCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(openDecryptButton))
+                    .addComponent(verifyTextField, javax.swing.GroupLayout.Alignment.LEADING))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,7 +201,33 @@ public class InboxPanel extends javax.swing.JPanel {
                             .addComponent(jLabel2)
                             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(decryptCheckBox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(keyDecryptLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(keyDecryptTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(openDecryptButton)
+                                    .addComponent(decryptFromFileCheckBox))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(decyptButton)
+                                .addGap(36, 36, 36)
+                                .addComponent(verifyCheckBox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(verifyLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(verifyTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(openVerifyButton)
+                                    .addComponent(verifyFromFileCheckBox))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(verifyButton)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane2)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -118,8 +242,80 @@ public class InboxPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    private void decryptCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decryptCheckBoxActionPerformed
+        // TODO add your handling code here:
+        boolean b = decryptCheckBox.isSelected();
+        keyDecryptLabel.setEnabled(b);
+        keyDecryptTextField.setEnabled(b);
+        decryptFromFileCheckBox.setEnabled(b);
+        fromFileDecrypt(decryptFromFileCheckBox.isSelected());
+    }//GEN-LAST:event_decryptCheckBoxActionPerformed
+
+    private void decryptFromFileCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decryptFromFileCheckBoxActionPerformed
+        // TODO add your handling code here:
+        fromFileDecrypt(decryptFromFileCheckBox.isSelected());
+    }//GEN-LAST:event_decryptFromFileCheckBoxActionPerformed
+
+    private void openDecryptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDecryptButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_openDecryptButtonActionPerformed
+
+    private void verifyCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyCheckBoxActionPerformed
+        // TODO add your handling code here:
+        boolean b = verifyCheckBox.isSelected();
+        verifyLabel.setEnabled(b);
+        verifyTextField.setEnabled(b);
+        verifyFromFileCheckBox.setEnabled(b);
+        fromFileVerify(verifyFromFileCheckBox.isSelected());
+    }//GEN-LAST:event_verifyCheckBoxActionPerformed
+
+    private void verifyFromFileCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyFromFileCheckBoxActionPerformed
+        // TODO add your handling code here:
+        fromFileVerify(verifyFromFileCheckBox.isSelected());
+    }//GEN-LAST:event_verifyFromFileCheckBoxActionPerformed
+
+     private void fromFileDecrypt(boolean b) {
+        if (decryptFromFileCheckBox.isEnabled()) {
+            keyDecryptTextField.setEnabled(!b);
+            openDecryptButton.setEnabled(b);
+        } else {
+            keyDecryptTextField.setEnabled(false);
+            openDecryptButton.setEnabled(false);
+        }
+    }
+    
+    private void fromFileVerify(boolean b) {
+        if (verifyFromFileCheckBox.isEnabled()) {
+            verifyTextField.setEnabled(!b);
+            openVerifyButton.setEnabled(b);
+        } else {
+            verifyTextField.setEnabled(false);
+            openVerifyButton.setEnabled(false);
+        }
+    }
+    
+    private void openVerifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVerifyButtonActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showOpenDialog(null);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Public file", "pub");
+        chooser.setFileFilter(filter);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            Path path = Paths.get(file.getAbsolutePath());
+            try {
+                String s = new String(Files.readAllBytes(path));
+                verifyTextField.setText(s);
+            } catch (IOException ex) {
+
+            }
+        }
+    }//GEN-LAST:event_openVerifyButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox decryptCheckBox;
+    private javax.swing.JCheckBox decryptFromFileCheckBox;
+    private javax.swing.JButton decyptButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
@@ -130,5 +326,14 @@ public class InboxPanel extends javax.swing.JPanel {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel keyDecryptLabel;
+    private javax.swing.JTextField keyDecryptTextField;
+    private javax.swing.JButton openDecryptButton;
+    private javax.swing.JButton openVerifyButton;
+    private javax.swing.JButton verifyButton;
+    private javax.swing.JCheckBox verifyCheckBox;
+    private javax.swing.JCheckBox verifyFromFileCheckBox;
+    private javax.swing.JLabel verifyLabel;
+    private javax.swing.JTextField verifyTextField;
     // End of variables declaration//GEN-END:variables
 }
