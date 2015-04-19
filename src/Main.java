@@ -1,5 +1,6 @@
 
 import gui.MailClientApplet;
+import gui.MainApplet;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
@@ -19,9 +20,9 @@ public class Main {
         JFrame frame = new JFrame("Email Client");
         frame.setSize(850, 640);
         frame.setLocationRelativeTo(null);
-        MailClientApplet mailClientApp = new MailClientApplet();
-        mailClientApp.init();
-        frame.getContentPane().add(mailClientApp);
+        MainApplet mailApp = new MainApplet();
+        mailApp.init();
+        frame.getContentPane().add(mailApp);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
