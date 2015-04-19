@@ -6,6 +6,21 @@
 
 package gui;
 
+import com.google.api.services.gmail.model.Message;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javamailclient.GmailAPI;
+import javax.mail.MessagingException;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+
 /**
  *
  * @author user
@@ -17,6 +32,52 @@ public class InboxPanel extends javax.swing.JPanel {
      */
     public InboxPanel() {
         initComponents();
+        //generate();
+    }
+    
+    public void generate() {
+        Message[] arrMsg = GmailAPI.Inbox.toArray(new Message[GmailAPI.Inbox.size()]);
+        InboxList = new JList(arrMsg);
+        InboxList.setCellRenderer(new DefaultListCellRenderer() { // Setting the DefaultListCellRenderer
+           public Component getListCellRendererComponent(JList list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+                Message message = ( Message )value;  // Using value we are getting the object in JList
+                Map<String,String> map = null;
+                try {
+                    map = GmailAPI.getMessageDetails(message.getId());
+                } catch (MessagingException ex) {
+                    Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                setText( map.get("subject").substring(0,20)+"..." );  // Setting the text
+                //setIcon( shape.getImage() ); // Setting the Image Icon
+                return this;
+            }
+        });
+        InboxList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        InboxList.setLayoutOrientation(JList.VERTICAL);
+        InboxList.setVisibleRowCount(-1);
+        jScrollPane1.setViewportView(InboxList);
+        
+        InboxList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                try {
+                    JList list = (JList)evt.getSource();
+                    int index = list.locationToIndex(evt.getPoint());
+                    String id = arrMsg[index].getId();
+                    Map<String,String> map = GmailAPI.getMessageDetails(id);
+                    FromTextField.setText(map.get("from"));
+                    SubjectTextField.setText(map.get("subject"));
+                    //BodyTextArea.setCo
+                    //BodyTextArea.setText(map.get("body"));
+                } catch (IOException ex) {
+                    Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (MessagingException ex) {
+                    Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
     /**
@@ -29,34 +90,34 @@ public class InboxPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        InboxList = new javax.swing.JList();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        BodyTextArea = new javax.swing.JTextArea();
+        FromTextField = new javax.swing.JTextField();
+        SubjectTextField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
+        InboxList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(InboxList);
 
         jLabel1.setText("From");
 
         jLabel2.setText("Subject");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        BodyTextArea.setColumns(20);
+        BodyTextArea.setRows(5);
+        jScrollPane2.setViewportView(BodyTextArea);
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        FromTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                FromTextFieldActionPerformed(evt);
             }
         });
 
@@ -85,8 +146,8 @@ public class InboxPanel extends javax.swing.JPanel {
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1)
-                            .addComponent(jTextField2))))
+                            .addComponent(FromTextField)
+                            .addComponent(SubjectTextField))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -97,11 +158,11 @@ public class InboxPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(FromTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(SubjectTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2))
                     .addGroup(layout.createSequentialGroup()
@@ -114,21 +175,21 @@ public class InboxPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void FromTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FromTextFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_FromTextFieldActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea BodyTextArea;
+    private javax.swing.JTextField FromTextField;
+    private javax.swing.JList InboxList;
+    private javax.swing.JTextField SubjectTextField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 }

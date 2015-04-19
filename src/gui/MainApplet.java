@@ -33,9 +33,11 @@ public class MainApplet extends javax.swing.JApplet {
         loginPanel.getSubmitButton().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                //GmailAPI.initialize(LoginPanel.code);
                 try {
-                    //System.out.println("haha");
+                    System.out.println("haha");
                     GmailAPI.initialize(LoginPanel.code);
+                    //GmailAPI.getMessages();
                 } catch (IOException ex) {
                     Logger.getLogger(MainApplet.class.getName()).log(Level.SEVERE, null, ex);
                 }

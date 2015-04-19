@@ -7,7 +7,11 @@
 package gui;
 
 import java.awt.CardLayout;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javamailclient.GmailAPI;
+import javax.mail.MessagingException;
 
 /**
  *
@@ -108,7 +112,7 @@ public class ClientPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(composeButton)
                 .addGap(18, 18, 18)
-                .addComponent(inboxButton)
+                .addComponent(inboxButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(sentMailButton)
                 .addGap(18, 18, 18)
@@ -167,8 +171,18 @@ public class ClientPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_composeButtonActionPerformed
 
     private void inboxButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inboxButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            GmailAPI.getInbox();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         showPanel("INBOX");
+        inboxPanel.generate();
+        //InboxPanel = new InboxPanel();
+        //InboxPanel.generate();
+        
     }//GEN-LAST:event_inboxButtonActionPerformed
 
     private void sentMailButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sentMailButtonActionPerformed
