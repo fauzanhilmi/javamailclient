@@ -80,7 +80,7 @@ public class GmailAPI {
   public static List<Message> Sent;
   public static List<Message> Spam;
   public static List<Message> Draft;
-  public static int limit = 30;
+  public static int limit = 25;
   
   public static void main(String[] args) {
       String to = "13512003@std.stei.itb.ac.id";

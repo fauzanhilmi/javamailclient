@@ -83,7 +83,7 @@ public class InboxPanel extends javax.swing.JPanel {
                 return this;
             }
         });
-        InboxList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        InboxList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         InboxList.setLayoutOrientation(JList.VERTICAL);
         InboxList.setVisibleRowCount(-1);
         jScrollPane1.setViewportView(InboxList);
