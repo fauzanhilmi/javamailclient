@@ -18,12 +18,14 @@ public class MailClientApplet extends javax.swing.JApplet {
     InboxPanel inboxPanel;
     SentMailPanel sentMailPanel;
     DraftPanel draftPanel;
+    SpamPanel spamPanel;
     
     public MailClientApplet() {
         composePanel = new ComposePanel();
         inboxPanel = new InboxPanel();
         sentMailPanel = new SentMailPanel();
         draftPanel = new DraftPanel();
+        spamPanel = new SpamPanel();
     }
     
     /**
@@ -63,6 +65,7 @@ public class MailClientApplet extends javax.swing.JApplet {
                     mainPanel.add("INBOX", inboxPanel);
                     mainPanel.add("SENT MAIL", sentMailPanel);
                     mainPanel.add("DRAFT", draftPanel);
+                    mainPanel.add("SPAM",spamPanel);
                 }
             });
         } catch (Exception ex) {
@@ -126,6 +129,11 @@ public class MailClientApplet extends javax.swing.JApplet {
         });
 
         jButton1.setText("Logout");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -216,6 +224,11 @@ public class MailClientApplet extends javax.swing.JApplet {
         // TODO add your handling code here:
         showPanel("DRAFT");
     }//GEN-LAST:event_draftButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        showPanel("SPAM");
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

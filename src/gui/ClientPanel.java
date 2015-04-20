@@ -23,6 +23,7 @@ public class ClientPanel extends javax.swing.JPanel {
     InboxPanel inboxPanel;
     SentMailPanel sentMailPanel;
     DraftPanel draftPanel;
+    SpamPanel spamPanel;
     
     /**
      * Creates new form ClientPanel
@@ -32,11 +33,13 @@ public class ClientPanel extends javax.swing.JPanel {
         inboxPanel = new InboxPanel();
         sentMailPanel = new SentMailPanel();
         draftPanel = new DraftPanel();
+        spamPanel = new SpamPanel();
         initComponents();
         mainPanel.add("COMPOSE", composePanel);
         mainPanel.add("INBOX", inboxPanel);
         mainPanel.add("SENT MAIL", sentMailPanel);
-        mainPanel.add("DRAFT", draftPanel);    
+        mainPanel.add("DRAFT", draftPanel);  
+        mainPanel.add("SPAM",spamPanel);
     }
     
     public void setHelloMessage() {
@@ -90,7 +93,12 @@ public class ClientPanel extends javax.swing.JPanel {
             }
         });
 
-        jButton1.setText("Logout");
+        jButton1.setText("Spam");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -208,6 +216,19 @@ public class ClientPanel extends javax.swing.JPanel {
         showPanel("DRAFT");
         draftPanel.generate();
     }//GEN-LAST:event_draftButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            GmailAPI.getSpam();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        showPanel("SPAM");
+        spamPanel.generate();
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void showPanel(String panelName) {
         CardLayout cardLayout = (CardLayout)mainPanel.getLayout();

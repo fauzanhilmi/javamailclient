@@ -3,12 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/user/Desktop/Tubes%202%20Kriptografi/javamailclient/src/signature/KeyGenerator.java</file>
-            <file>file:/C:/Users/user/Desktop/Tubes%202%20Kriptografi/javamailclient/src/blockcipher/BlockCipher.java</file>
-            <file>file:/C:/Users/user/Desktop/Tubes%202%20Kriptografi/javamailclient/src/gui/LoginPanel.java</file>
-            <file>file:/C:/Users/user/Desktop/Tubes%202%20Kriptografi/javamailclient/src/gui/ComposePanel.java</file>
-            <file>file:/C:/Users/user/Desktop/Tubes%202%20Kriptografi/javamailclient/src/gui/MainApplet.java</file>
-            <file>file:/C:/Users/user/Desktop/Tubes%202%20Kriptografi/javamailclient/src/blockcipher/StringByteModifier.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/gui/DraftPanel.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/gui/ClientPanel.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/gui/InboxPanel.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/blockcipher/BlockCipher.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/javamailclient/GmailAPI.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/javamailclient/HomeFrame.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/gui/LoginPanel.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/gui/ComposePanel.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/gui/MailClientApplet.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/gui/SentMailPanel.java</file>
+            <file>file:/C:/Users/Fauzan%20Hilmi/Dropbox/Works/IF/Kriptografi/Tubes%202/javamailclient/src/javamailclient/GmailApiQuickstart.java</file>
         </group>
     </open-files>
 </project-private>
