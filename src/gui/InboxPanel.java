@@ -6,12 +6,20 @@
 
 package gui;
 
+import blockcipher.BlockCipher;
+import blockcipher.StringByteModifier;
+import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.model.Message;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,8 +31,14 @@ import javax.mail.MessagingException;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import signature.BigPoint;
+import signature.ECDSA;
 
 /**
  *
@@ -32,6 +46,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class InboxPanel extends javax.swing.JPanel {
 
+    byte [] key;
+    byte [] cipher;
+    byte [] plain;
+    String message;
+    BigPoint publickey; 
+            
     /**
      * Creates new form InboxPanel
      */
@@ -202,8 +222,18 @@ public class InboxPanel extends javax.swing.JPanel {
         });
 
         decyptButton.setText("Decrypt");
+        decyptButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                decyptButtonActionPerformed(evt);
+            }
+        });
 
         verifyButton.setText("Verify");
+        verifyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verifyButtonActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Date");
 
@@ -332,6 +362,18 @@ public class InboxPanel extends javax.swing.JPanel {
 
     private void openDecryptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDecryptButtonActionPerformed
         // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        int retrieval = chooser.showOpenDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            Path path = Paths.get(file.getAbsolutePath());
+            try {
+                key = Files.readAllBytes(path);
+                keyDecryptTextField.setText(key.toString());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_openDecryptButtonActionPerformed
 
     private void verifyCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyCheckBoxActionPerformed
@@ -374,17 +416,177 @@ public class InboxPanel extends javax.swing.JPanel {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Public file", "pub");
         chooser.setFileFilter(filter);
         if (retrieval == JFileChooser.APPROVE_OPTION) {
-            File file = chooser.getSelectedFile();
-            Path path = Paths.get(file.getAbsolutePath());
+            FileInputStream fis = null;
             try {
-                String s = new String(Files.readAllBytes(path));
-                verifyTextField.setText(s);
-            } catch (IOException ex) {
-
+                File file = chooser.getSelectedFile();
+                Path path = Paths.get(file.getAbsolutePath());
+                fis = new FileInputStream(file);
+                //Construct BufferedReader from InputStreamReader
+                BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                try {
+                    String x = br.readLine();
+                    String y = br.readLine();
+                    publickey = new BigPoint(new BigInteger(x), new BigInteger(y));
+                    System.out.println("Public key : " + publickey.getX() + publickey.getY());
+                    br.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    fis.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }//GEN-LAST:event_openVerifyButtonActionPerformed
 
+    private boolean isFileDecrypt() {
+        return decryptCheckBox.isSelected() && decryptFromFileCheckBox.isEnabled() 
+                && decryptFromFileCheckBox.isSelected();
+    }
+    
+    private boolean isFileSign() {
+        return verifyCheckBox.isSelected() && verifyFromFileCheckBox.isEnabled()
+                && verifyFromFileCheckBox.isSelected();
+    }
+    
+    private void generateKey() {
+        if (isFileDecrypt()) {
+            
+        } else {
+            key = keyDecryptTextField.getText().getBytes();
+       }
+    }
+    
+    private String getTextBody() {
+        String html = BodyTextPane.getText();
+        Document doc = Jsoup.parseBodyFragment(html);
+        Element body = doc.body();
+        return body.text();
+    }
+    
+    private void setTextBody(String sbody) {
+        String html = BodyTextPane.getText();
+        Document doc = Jsoup.parseBodyFragment(html);
+        //Element body = doc.body();
+        //body.text(sbody);
+        doc.select("body").html(sbody);
+        BodyTextPane.setText(doc.html());
+    }
+    
+    private String getSign() {
+        String html = BodyTextPane.getText();
+        Document doc = Jsoup.parseBodyFragment(html);
+        if (doc.select("ds") != null) {
+            //System.out.println("Signature : \n" + doc.select("ds").text());
+            return doc.select("ds").text();   
+        }
+        return null;
+    }
+    
+    private String[] getSignature(String sign) {
+        String [] ret = new String[2];
+        int offset = 0;
+        while(sign.charAt(offset) < 'a' || sign.charAt(offset) > 'z'
+                || sign.charAt(offset) < '0' || sign.charAt(offset) > '9') {
+            offset++;
+        }
+        String string1 = "";
+        String string2 = "";
+        while(sign.charAt(offset) >= 'a' || sign.charAt(offset) <= 'z'
+                || sign.charAt(offset) >= '0' || sign.charAt(offset) <= '9') {
+            string1 += sign.charAt(offset);
+            offset++;
+        }
+        while(sign.charAt(offset) < 'a' || sign.charAt(offset) > 'z'
+                || sign.charAt(offset) < '0' || sign.charAt(offset) > '9') {
+            offset++;
+        }
+        while( (sign.charAt(offset) >= 'a' || sign.charAt(offset) <= 'z'
+                || sign.charAt(offset) >= '0' || sign.charAt(offset) <= '9') && offset<sign.length()){
+            string2 += sign.charAt(offset);
+            offset++;
+        }
+        ret[0] = string1;
+        ret[1] = string2;
+        return ret;
+    }
+    
+    private String getPlain() {
+        String html = BodyTextPane.getText();
+        Document doc = Jsoup.parseBodyFragment(html);
+        doc.select("ds").remove();
+        
+        System.out.println("DS nya diilangin : \n" + doc.select("body").html());
+        
+        return doc.select("body").html();
+    }
+    
+    private void showMsgDialog(String title, String message) {
+        JOptionPane.showMessageDialog (null, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void decyptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decyptButtonActionPerformed
+        // TODO add your handling code here:
+        generateKey();
+        cipher = Base64.decodeBase64(getTextBody());
+        System.out.println("Isi message : \n" + BodyTextPane.getText());
+        plain = BlockCipher.decryptCBC(cipher, StringByteModifier.md5Hash(key));
+        message = new String(plain);
+        System.out.println("\nHasil enkrip : \n" + new String(plain));
+        setTextBody(new String(plain));
+    }//GEN-LAST:event_decyptButtonActionPerformed
+
+    private void verifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyButtonActionPerformed
+        // TODO add your handling code here:
+        /*String text = message;
+        System.out.println("Verify text :\n" + text);
+        String sign = text.substring(text.indexOf("<ds>")+4, text.indexOf("</ds>"));
+        String plain = text.substring(0, text.indexOf("<ds>"));
+
+        //sign = sign.substring(4, sign.length()-5);
+        String[] temp = sign.split("\n");
+        System.out.println("Signature : " + temp[0] + ", " + temp[1]);
+        BigPoint signature = new BigPoint(new BigInteger(temp[0], 16), new BigInteger(temp[1], 16));*/
+        
+        
+//        ECDSA ecdsa = new ECDSA();
+        
+        String sign = getSign();
+        System.out.println("Signature : " + sign);
+        if (sign != null) {
+            String [] temp = sign.split(" ");
+            System.out.println("Signature : \n");
+            for(int i=0; i<temp.length; i++) {
+                System.out.println(i + " " + temp[i] + " ");
+                temp[i] = temp[i].trim();
+            }
+            if (temp[0].length() == 0 || temp[1].length() == 0) {
+                showMsgDialog("Verifikasi", "Tidak ada tanda tangan digital!");
+                return;
+            }
+            System.out.println();
+            BigPoint signature = new BigPoint(new BigInteger(temp[0], 16), new BigInteger(temp[1], 16));
+            //String text = getPlain();
+            String text = message;
+            ECDSA ecdsa = new ECDSA();
+            if(ecdsa.verify(text, signature, publickey)) {
+                //System.out.println("Verifikasi benar !");
+                showMsgDialog("Verifikasi", "Verifikasi benar!");
+            } else {
+                showMsgDialog("Verifikasi", "Verifikasi salah!");
+            }
+        } else {
+            System.out.println("Signature null!");
+        }
+    }//GEN-LAST:event_verifyButtonActionPerformed
+
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextPane BodyTextPane;
