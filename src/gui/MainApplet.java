@@ -35,7 +35,7 @@ public class MainApplet extends javax.swing.JApplet {
             public void mouseClicked(MouseEvent e) {
                 //GmailAPI.initialize(LoginPanel.code);
                 try {
-                    System.out.println("haha");
+                    //System.out.println("haha");
                     GmailAPI.initialize(LoginPanel.code);
                     //GmailAPI.getMessages();
                 } catch (IOException ex) {

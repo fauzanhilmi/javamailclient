@@ -35,7 +35,9 @@ public class ComposePanel extends javax.swing.JPanel {
     byte[] key;
     byte[] cipher;
     String message;
-    String attachmentPath;
+    //String attachmentPath;
+    String filepath;
+    String filename;
     
     /**
      * Creates new form ComposePanel
@@ -309,7 +311,8 @@ public class ComposePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_signFromFileCheckBoxActionPerformed
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
-        System.out.println("Klik!");
+        //System.out.println(filepath);
+        //System.out.println(filename);
         sendMessage();
     }//GEN-LAST:event_sendButtonActionPerformed
 
@@ -367,7 +370,10 @@ public class ComposePanel extends javax.swing.JPanel {
         int retrieval = chooser.showOpenDialog(null);
         if (retrieval == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
-            attachmentPath = file.getAbsolutePath();
+            //attachmentPath = file.getAbsolutePath();
+            filepath = file.getParent();
+            filepath += (char)92;
+            filename = file.getName();
         }
     }//GEN-LAST:event_attachmentButtonActionPerformed
     
@@ -408,18 +414,31 @@ public class ComposePanel extends javax.swing.JPanel {
         String from = GmailAPI.USER_EMAIL;
         String to = toTextField.getText();
         String subject = subjectTextField.getText();
-        try {
-            GmailAPI.sendEmail(to, from, subject, message);
-            /*System.out.println("Key : " + key);
-            System.out.println("Message : " + message);
-            byte[] b = Base64.decodeBase64(message);
-            System.out.println("Panjang key md5 : " + StringByteModifier.md5Hash(key).length);
-            byte[] dekrip = BlockCipher.decryptCBC (b, StringByteModifier.md5Hash(key));
-            System.out.println("Dekrip : " + new String(dekrip));*/
-        } catch (MessagingException ex) {
-            Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
+        if(filename==null && filepath == null) {
+            try {
+                GmailAPI.sendEmail(to, from, subject, message);
+                System.out.println("no attachment");
+                /*System.out.println("Key : " + key);
+                System.out.println("Message : " + message);
+                byte[] b = Base64.decodeBase64(message);
+                System.out.println("Panjang key md5 : " + StringByteModifier.md5Hash(key).length);
+                byte[] dekrip = BlockCipher.decryptCBC (b, StringByteModifier.md5Hash(key));
+                System.out.println("Dekrip : " + new String(dekrip));*/
+            } catch (MessagingException ex) {
+                Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else {
+            try {
+                System.out.println("ada attachment");
+                GmailAPI.sendEmailwithAttachment(to, from, subject, message, filepath, filename);
+            } catch (MessagingException ex) {
+                Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(ComposePanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     

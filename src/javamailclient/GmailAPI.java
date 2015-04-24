@@ -151,6 +151,11 @@ public class GmailAPI {
       MimeMessage mm = GmailAPI.createEmail(to, from, subject, bodyText);
       sendMessage(service, USER, mm);
   }
+  
+  public static void sendEmailwithAttachment(String to, String from, String subject, String bodyText, String filepath, String filename) throws MessagingException, IOException {
+      MimeMessage mm = GmailAPI.createEmailWithAttachment(to, from, subject, bodyText, filepath, filename);
+      sendMessage(service,USER,mm);
+  }
    /**
    * Send an email from the user's mailbox to its recipient.
    *

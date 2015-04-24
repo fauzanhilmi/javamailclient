@@ -134,6 +134,11 @@ public class ClientPanel extends javax.swing.JPanel {
         helloMessageLabel.setText("Hello, ");
 
         jButton2.setText("Logout");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         mainPanel.setName(""); // NOI18N
         mainPanel.setLayout(new java.awt.CardLayout());
@@ -229,6 +234,10 @@ public class ClientPanel extends javax.swing.JPanel {
         spamPanel.generate();
         
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     private void showPanel(String panelName) {
         CardLayout cardLayout = (CardLayout)mainPanel.getLayout();
