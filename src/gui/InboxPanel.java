@@ -101,7 +101,7 @@ public class InboxPanel extends javax.swing.JPanel {
                     jTextField2.setText(map.get("subject"));
                     dateTextField.setText(map.get("senddate"));
                     BodyTextPane.setText(map.get("body"));
-                    BodyTextPane.setContentType("text/html");
+                    //BodyTextPane.setContentType("text/html");
                     //BodyTextArea.setCo
                 } catch (IOException ex) {
                     Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -143,9 +143,9 @@ public class InboxPanel extends javax.swing.JPanel {
         verifyButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         dateTextField = new javax.swing.JTextField();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        BodyTextPane = new javax.swing.JTextPane();
         jButton3 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        BodyTextPane = new javax.swing.JTextArea();
 
         InboxList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -240,14 +240,16 @@ public class InboxPanel extends javax.swing.JPanel {
 
         jLabel3.setText("Date");
 
-        jScrollPane3.setViewportView(BodyTextPane);
-
         jButton3.setText("View Attachment");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
+
+        BodyTextPane.setColumns(20);
+        BodyTextPane.setRows(5);
+        jScrollPane2.setViewportView(BodyTextPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -264,7 +266,7 @@ public class InboxPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel2)
@@ -273,7 +275,7 @@ public class InboxPanel extends javax.swing.JPanel {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
                                     .addComponent(jTextField1)))
-                            .addComponent(jScrollPane3))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -319,9 +321,9 @@ public class InboxPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(decryptCheckBox)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(keyDecryptLabel)
@@ -346,9 +348,7 @@ public class InboxPanel extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(verifyButton)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(jScrollPane3))))
+                            .addComponent(jScrollPane2)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -643,7 +643,7 @@ public class InboxPanel extends javax.swing.JPanel {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextPane BodyTextPane;
+    private javax.swing.JTextArea BodyTextPane;
     private javax.swing.JList InboxList;
     private javax.swing.JTextField dateTextField;
     private javax.swing.JCheckBox decryptCheckBox;
@@ -656,7 +656,7 @@ public class InboxPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JLabel keyDecryptLabel;

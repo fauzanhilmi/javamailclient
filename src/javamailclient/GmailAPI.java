@@ -308,9 +308,10 @@ public class GmailAPI {
       String userId = USER;
       Message message = service.users().messages().get(userId, messageId).execute();
       List<MessagePart> parts = message.getPayload().getParts();
-      System.out.println(parts.size());
+      //System.out.println(parts.size());
       String name = "None";
-      if(parts.size()>0) {
+      //if(parts.size()>0) {
+      if(parts!=null) {
           for(MessagePart part : parts) {
               if (part.getFilename() != null && part.getFilename().length() > 0) { 
                   name = part.getFilename();
