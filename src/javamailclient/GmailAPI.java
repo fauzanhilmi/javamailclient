@@ -22,6 +22,8 @@ import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
+import com.google.api.services.gmail.model.MessagePart;
+import com.google.api.services.gmail.model.MessagePartBody;
 import com.google.api.services.gmail.model.MessagePartHeader;
 import com.google.api.services.gmail.model.Profile;
 
@@ -44,6 +46,7 @@ import javax.mail.internet.MimeMultipart;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,7 +68,7 @@ public class GmailAPI {
   private static final String SCOPE = "https://mail.google.com/";
   private static final String APP_NAME = "Gmail API Quickstart";
   // Email address of the user, or "me" can be used to represent the currently authorized user.
-  private static final String USER = "me";
+  public static final String USER = "me";
   // Path to the client_secret.json file downloaded from the Developer Console
   
   private static final String CLIENT_SECRET_PATH = "client_secret_699951936283-lnrs2pff1ho2j6t9eqdd2q84vbtm1ptq.apps.googleusercontent.com.json";
@@ -81,6 +84,7 @@ public class GmailAPI {
   public static List<Message> Spam;
   public static List<Message> Draft;
   public static int limit = 25;
+  
   
   public static void main(String[] args) {
       String to = "13512003@std.stei.itb.ac.id";
@@ -267,6 +271,59 @@ public class GmailAPI {
     email.setContent(multipart);
 
     return email;
+  }
+  
+  /**
+   * Get the attachments in a given email.
+   *
+   * @param service Authorized Gmail API instance.
+   * @param userId User's email address. The special value "me"
+   * can be used to indicate the authenticated user.
+   * @param messageId ID of Message containing attachment..
+   * @throws IOException
+   */
+  public static void getAttachments(Gmail service, String userId, String messageId, String path, String name)
+      throws IOException {
+    Message message = service.users().messages().get(userId, messageId).execute();
+    List<MessagePart> parts = message.getPayload().getParts();
+    for (MessagePart part : parts) {
+      if (part.getFilename() != null && part.getFilename().length() > 0) {
+        //String filename = part.getFilename();
+          //System.out.println(filename);
+        String attId = part.getBody().getAttachmentId();
+        MessagePartBody attachPart = service.users().messages().attachments().
+            get(userId, messageId, attId).execute();
+        byte[] fileByteArray = Base64.decodeBase64(attachPart.getData());
+        FileOutputStream fileOutFile =
+            //new FileOutputStream("directory_to_store_attachments" + filename);
+                new FileOutputStream(path +(char)92+ name);
+          System.out.println(path+(char)92+name);
+        fileOutFile.write(fileByteArray);
+        fileOutFile.close();
+      }
+    }
+  }
+  
+  public static String getAttachmentFilename(String messageId) throws IOException {
+      String userId = USER;
+      Message message = service.users().messages().get(userId, messageId).execute();
+      List<MessagePart> parts = message.getPayload().getParts();
+      System.out.println(parts.size());
+      String name = "None";
+      if(parts.size()>0) {
+          for(MessagePart part : parts) {
+              if (part.getFilename() != null && part.getFilename().length() > 0) { 
+                  name = part.getFilename();
+                  return name;
+              }
+          }
+      }
+      //else name = "None";
+      /*if(parts.size()>0) {
+          name = parts.get(0).getFilename();
+      } 
+      else name = "None";*/
+      return name;
   }
   
   /**

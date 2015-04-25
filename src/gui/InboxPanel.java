@@ -51,6 +51,7 @@ public class InboxPanel extends javax.swing.JPanel {
     byte [] plain;
     String message;
     BigPoint publickey; 
+    String curId;
             
     /**
      * Creates new form InboxPanel
@@ -94,6 +95,7 @@ public class InboxPanel extends javax.swing.JPanel {
                     JList list = (JList)evt.getSource();
                     int index = list.locationToIndex(evt.getPoint());
                     String id = arrMsg[index].getId();
+                    curId = id;
                     Map<String,String> map = GmailAPI.getMessageDetails(id);
                     jTextField1.setText(map.get("from"));
                     jTextField2.setText(map.get("subject"));
@@ -238,7 +240,6 @@ public class InboxPanel extends javax.swing.JPanel {
 
         jLabel3.setText("Date");
 
-        jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         jScrollPane3.setViewportView(BodyTextPane);
 
         jButton3.setText("View Attachment");
@@ -260,10 +261,10 @@ public class InboxPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel2)
@@ -293,7 +294,7 @@ public class InboxPanel extends javax.swing.JPanel {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(openDecryptButton))
                                     .addComponent(verifyTextField, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 4, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -318,9 +319,9 @@ public class InboxPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(decryptCheckBox)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(keyDecryptLabel)
@@ -345,7 +346,9 @@ public class InboxPanel extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(verifyButton)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane3)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(3, 3, 3)
+                                .addComponent(jScrollPane3))))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -552,25 +555,39 @@ public class InboxPanel extends javax.swing.JPanel {
         plain = BlockCipher.decryptCBC(cipher, StringByteModifier.md5Hash(key));
         message = new String(plain);
         System.out.println("\nHasil enkrip : \n" + new String(plain));
-        setTextBody(new String(plain));
+        //setTextBody(new String(plain));
+        BodyTextPane.setText(new String(plain));
     }//GEN-LAST:event_decyptButtonActionPerformed
 
     private void verifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyButtonActionPerformed
         // TODO add your handling code here:
-        /*String text = message;
-        System.out.println("Verify text :\n" + text);
-        String sign = text.substring(text.indexOf("<ds>")+4, text.indexOf("</ds>"));
-        String plain = text.substring(0, text.indexOf("<ds>"));
+        try {
+            String text = BodyTextPane.getText();
+            System.out.println("Verify text :\n" + text);
+            String sign = text.substring(text.indexOf("<ds>")+4, text.indexOf("</ds>"));
+            String plai = text.substring(0, text.indexOf("<ds>"));
 
-        //sign = sign.substring(4, sign.length()-5);
-        String[] temp = sign.split("\n");
-        System.out.println("Signature : " + temp[0] + ", " + temp[1]);
-        BigPoint signature = new BigPoint(new BigInteger(temp[0], 16), new BigInteger(temp[1], 16));*/
-        
+            //sign = sign.substring(4, sign.length()-5);
+            String[] temp = sign.split("\n");
+            System.out.println("Signature : " + temp[0] + ", " + temp[1]);
+            BigPoint signature = new BigPoint(new BigInteger(temp[0], 16), new BigInteger(temp[1], 16));
+
+            ECDSA ecdsa = new ECDSA();
+            if(ecdsa.verify(plai, signature, publickey)) {
+                //System.out.println("Verifikasi benar !");
+                showMsgDialog("Verifikasi", "Verifikasi benar!");
+            }
+            else {
+                showMsgDialog("Verifikasi", "Verifikasi salah!");
+            }
+        }
+        catch(Exception e) {
+            showMsgDialog("Verifikasi", "Verifikasi salah!");
+        }
         
 //        ECDSA ecdsa = new ECDSA();
         
-        String sign = getSign();
+        /*String sign = getSign();
         System.out.println("Signature : " + sign);
         if (sign != null) {
             String [] temp = sign.split(" ");
@@ -596,11 +613,30 @@ public class InboxPanel extends javax.swing.JPanel {
             }
         } else {
             System.out.println("Signature null!");
-        }
+        }*/
     }//GEN-LAST:event_verifyButtonActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        try {                                         
+            String name = GmailAPI.getAttachmentFilename(curId);
+            System.out.println(name);
+            if(name=="None") {
+                JOptionPane.showMessageDialog(this,"No file attached on this email");
+            }
+            else {
+                JFileChooser chooser = new JFileChooser();
+                File defFile = new File(name);
+                chooser.setSelectedFile(defFile);
+                int filesave = chooser.showSaveDialog(null);
+                if(filesave==JFileChooser.APPROVE_OPTION) {
+                    //chooser.getSelectedFile().se
+                    File file = chooser.getCurrentDirectory();
+                    GmailAPI.getAttachments(GmailAPI.service,GmailAPI.USER,curId,file.getAbsolutePath(),chooser.getSelectedFile().getName());
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(InboxPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     
